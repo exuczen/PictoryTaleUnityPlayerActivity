@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="UnityStatusBarThemeTransparent" parent="android:Theme.Light.NoTitleBar.Fullscreen" />
+    <style name="UnityStatusBarThemeLight" parent="android:Theme.Light.NoTitleBar.Fullscreen" />
+    <style name="UnityStatusBarTheme" parent="UnityStatusBarThemeTransparent" />
+</resources>
