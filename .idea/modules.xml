@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/UnityShowAndroidStatusBar.iml" filepath="$PROJECT_DIR$/UnityShowAndroidStatusBar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PictoryTaleUnityPlayerActivity.iml" filepath="$PROJECT_DIR$/PictoryTaleUnityPlayerActivity.iml" />
       <module fileurl="file://$PROJECT_DIR$/unity-player-activity-extension/unity-player-activity-extension.iml" filepath="$PROJECT_DIR$/unity-player-activity-extension/unity-player-activity-extension.iml" />
     </modules>
   </component>
