@@ -1,9 +1,9 @@
 package com.pictorytale.messenger.android;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -30,6 +30,13 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 		showSystemUi();
 		addUiVisibilityChangeListener();
 		PictoryTaleUnityPlayerActivity.instance = this;
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == NativeShare.SHARE_REQUEST_CODE) {
+			NativeShare.sendMessageToUnityObject(NativeShare.unitySuccessCallbackName, "requestCode=" + requestCode);
+		}
 	}
 
 	private static int getLowProfileFlag()

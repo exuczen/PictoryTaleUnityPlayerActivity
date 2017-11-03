@@ -18,9 +18,9 @@ android {
 
 dependencies {
     //    compile fileTree(include: ['*.jar'], dir: 'libs')
-    //    compile 'com.android.support:appcompat-v7:25.3.1'
-    provided files('libs/classes.jar')
+    compile 'com.android.support:appcompat-v7:25.3.1'
     compile files('libs/libmessaging_unity_player_activity.jar')
+    provided files('libs/classes.jar')
 }
 
 task exportJar(type: Copy) {
