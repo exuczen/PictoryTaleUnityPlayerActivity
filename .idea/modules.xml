@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PictoryTaleUnityPlayerActivity.iml" filepath="$PROJECT_DIR$/PictoryTaleUnityPlayerActivity.iml" />
-      <module fileurl="file://$PROJECT_DIR$/unity-native-share/unity-native-share.iml" filepath="$PROJECT_DIR$/unity-native-share/unity-native-share.iml" />
       <module fileurl="file://$PROJECT_DIR$/unity-player-activity-extension/unity-player-activity-extension.iml" filepath="$PROJECT_DIR$/unity-player-activity-extension/unity-player-activity-extension.iml" />
     </modules>
   </component>

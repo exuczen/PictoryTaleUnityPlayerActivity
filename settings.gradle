@@ -1,1 +1,1 @@
-include ':unity-player-activity-extension', ':unity-native-share'
+include ':unity-player-activity-extension'
