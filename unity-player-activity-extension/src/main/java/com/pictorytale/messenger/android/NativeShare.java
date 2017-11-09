@@ -24,8 +24,6 @@ public class NativeShare
 	public static final String unitySuccessCallbackName = "OnDone";
 	public static final String unityErrorCallbackName = "OnError";
 
-	public static final int SHARE_REQUEST_CODE = 123;
-
 	/**
 	 * this method is called in Unity
 	 * @param name
@@ -75,7 +73,7 @@ public class NativeShare
 				intent = Intent.createChooser(intent, "");
 				//intent.setClass(context, NativeShareActivity.class);
 				//context.startActivity(intent);
-				context.startActivityForResult(intent, SHARE_REQUEST_CODE);
+				context.startActivityForResult(intent, PictoryTaleUnityPlayerActivity.SHARE_REQUEST_CODE);
 				//context.setResult(Activity.RESULT_OK, intent);
 			} else {
 				intent.setDataAndType(null, "");
