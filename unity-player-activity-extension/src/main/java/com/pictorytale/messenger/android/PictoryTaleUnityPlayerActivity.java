@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
 import android.view.Window;
@@ -95,22 +96,36 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 		});
 	}
 
+	private DisplayMetrics getDisplayMetrics() {
+		//		DisplayMetrics metrics = new DisplayMetrics();
+		//		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		//		return metrics;
+		return getResources().getDisplayMetrics();
+	}
+
+	private Display getDefaultDisplay()
+	{
+		return getWindowManager().getDefaultDisplay();
+	}
+
 	public int getScreenWidth()
 	{
-		Display display = getWindowManager().getDefaultDisplay();
 		Point size = new Point();
-		display.getSize(size);
+		getDefaultDisplay().getSize(size);
 		return size.x;
 	}
 
 	public int getScreenHeight()
 	{
-		Display display = getWindowManager().getDefaultDisplay();
 		Point size = new Point();
-		display.getSize(size);
+		getDefaultDisplay().getSize(size);
 		return size.y;
 	}
 
+	public int getHeightPixels()
+	{
+		return getDisplayMetrics().heightPixels;
+	}
 
 	private int getStatusBarHeightResourceId()
 	{
@@ -164,6 +179,26 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 		//		boolean hasMenuKey = ViewConfiguration.get(this).hasPermanentMenuKey();
 		//		boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
 		//		return !hasMenuKey && !hasBackKey; // Do whatever you need to do, this device has a navigation bar
+	}
+
+	public float getScreenYDPI()
+	{
+		return getDisplayMetrics().ydpi; // The exact physical pixels per inch of the screen in the Y dimension.
+	}
+
+	public float getScreenDensity()
+	{
+		return getDisplayMetrics().density;
+	}
+
+	public float getScreenScaledDensity()
+	{
+		return getDisplayMetrics().scaledDensity;
+	}
+
+	public int getScreenDensityDPI()
+	{
+		return getDisplayMetrics().densityDpi;
 	}
 
 	private void setStatusBarColor(int color) {
