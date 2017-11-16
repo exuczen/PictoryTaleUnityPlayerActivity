@@ -1,11 +1,17 @@
 apply plugin: 'com.android.library'
+//apply plugin: 'com.android.application'
+//apply plugin: 'com.google.gms.google-services'
+
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 26
+    //buildToolsVersion "26.0.2"
+    //Error:The specified Android SDK Build Tools version (26.0.0) is ignored, as it is below the minimum supported version (26.0.2) for Android Gradle Plugin 3.0.0.
+    //Android SDK Build Tools 26.0.2 will be used.
+    //To suppress this warning, remove "buildToolsVersion '26.0.0'" from your build.gradle file, as each version of the Android Gradle Plugin now has a default version of the build tools.
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 25
+        minSdkVersion 19
+        targetSdkVersion 26
     }
 
     buildTypes {
@@ -18,13 +24,15 @@ android {
 
 dependencies {
     //    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile files('libs/libmessaging_unity_player_activity.jar')
+    compile "com.android.support:appcompat-v7:$supportlib_version"
+    provided files('libs/libmessaging_unity_player_activity.jar')
+    provided "com.google.firebase:firebase-auth:$play_services_version"
+    provided "com.google.android.gms:play-services-auth:$play_services_version"
     provided files('libs/classes.jar')
 }
 
 task exportJar(type: Copy) {
-    from('build/intermediates/bundles/default/classes.jar')
+    from('build/intermediates/bundles/release/classes.jar')
     into('release/')
     rename('classes.jar', 'unity-player-activity-extension.jar')
 }

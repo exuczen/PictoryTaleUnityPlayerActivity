@@ -1,9 +1,6 @@
 package com.pictorytale.messenger.android;
 
 import android.app.Activity;
-import android.content.ContentProvider;
-import android.content.ContentProviderClient;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
@@ -20,7 +17,7 @@ import java.io.File;
 
 public class NativeShare
 {
-	private static String unityGameObjectName = "VideoSharingMessageReceiver";
+	public static String unityGameObjectName = "VideoSharingMessageReceiver";
 	public static final String unitySuccessCallbackName = "OnDone";
 	public static final String unityErrorCallbackName = "OnError";
 
@@ -30,15 +27,6 @@ public class NativeShare
 	 */
 	public static void setUnityObjectName(String name) {
 		unityGameObjectName = name;
-	}
-
-	/**
-	 * Send message to Unity's GameObject (named as Plugin.unityGameObjectName)
-	 * @param method name of the method in GameObject's script
-	 * @param message the actual message
-	 */
-	public static void sendMessageToUnityObject(String method, String message){
-		UnityPlayer.UnitySendMessage(unityGameObjectName, method, message);
 	}
 
 	public static void shareFile(Activity context, String mediaPath, String authority) {
@@ -73,7 +61,7 @@ public class NativeShare
 				intent = Intent.createChooser(intent, "");
 				//intent.setClass(context, NativeShareActivity.class);
 				//context.startActivity(intent);
-				context.startActivityForResult(intent, PictoryTaleUnityPlayerActivity.SHARE_REQUEST_CODE);
+				context.startActivityForResult(intent, PictoryTaleUnityPlayerActivity.SHARE_FILE_REQUEST_CODE);
 				//context.setResult(Activity.RESULT_OK, intent);
 			} else {
 				intent.setDataAndType(null, "");

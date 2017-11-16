@@ -12,12 +12,39 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import com.google.firebase.MessagingUnityPlayerActivity;
+import com.unity3d.player.UnityPlayer;
 
 public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 {
-	public static final int SHARE_REQUEST_CODE = 123;
+	private static final String TAG = PictoryTaleUnityPlayerActivity.class.getSimpleName();
+
+	private static String googleTokenReceiverUnityGameObjectName = "GoogleTokenMessageReceiver";
+	public static final String googleTokenReceivedUnitySuccessCallbackName = "OnDone";
+	public static final String googleTokenReceivedUnityErrorCallbackName = "OnError";
+
+
+	public static final int SHARE_FILE_REQUEST_CODE = 123;
+	public static final int GOOGLE_SIGN_IN_REQUEST_CODE = 124;
 
 	public static PictoryTaleUnityPlayerActivity instance;
+
+	public static PictoryTaleUnityPlayerActivity getInstance()
+	{
+		return instance;
+	}
+
+	public static void setGoogleTokenReceiverUnityObjectName(String name) {
+		googleTokenReceiverUnityGameObjectName = name;
+	}
+
+	/**
+	 * Send message to Unity's GameObject
+	 * @param method name of the method in GameObject's script
+	 * @param message the actual message
+	 */
+	public static void sendMessageToUnityObject(String objectName, String method, String message){
+		UnityPlayer.UnitySendMessage(objectName, method, message);
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -38,11 +65,23 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 		addUiVisibilityChangeListener();
 		PictoryTaleUnityPlayerActivity.instance = this;
 	}
+	@Override
+	protected void onStart()
+	{
+		super.onStart();
+	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == PictoryTaleUnityPlayerActivity.SHARE_REQUEST_CODE) {
-			NativeShare.sendMessageToUnityObject(NativeShare.unitySuccessCallbackName, "requestCode=" + requestCode);
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (requestCode == PictoryTaleUnityPlayerActivity.SHARE_FILE_REQUEST_CODE)
+		{
+			sendMessageToUnityObject(NativeShare.unityGameObjectName, NativeShare.unitySuccessCallbackName, "requestCode=" + requestCode);
+		}
+		else if (requestCode == PictoryTaleUnityPlayerActivity.GOOGLE_SIGN_IN_REQUEST_CODE)
+		{
+
 		}
 	}
 

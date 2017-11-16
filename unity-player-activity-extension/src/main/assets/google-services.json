@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "156834266108",
+    "firebase_url": "https://pictorygramtest.firebaseio.com",
+    "project_id": "pictorygramtest",
+    "storage_bucket": "pictorygramtest.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156834266108:android:84598184af56f125",
+        "android_client_info": {
+          "package_name": "com.pictorytale.messenger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "156834266108-4cb9jor6c7pid42v376nqcc3oq64g3he.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pictorytale.messenger",
+            "certificate_hash": "7d130a8a9a2cdf26333f90d0753fdecd3d27380f"
+          }
+        },
+        {
+          "client_id": "156834266108-e3blnen2jvrjrqa2kkcu33u9odmd6hpr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8lPIlbxEteIAOG05bmddqdHMGhZpDu20"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "156834266108-e3blnen2jvrjrqa2kkcu33u9odmd6hpr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "156834266108-bt0jtk1nssva30p85a54mgljnssfo9fk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.pictorytale.messenger"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
