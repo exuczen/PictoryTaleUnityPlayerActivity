@@ -45,7 +45,7 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 	public static final int GOOGLE_SIGN_IN_REQUEST_CODE = 124;
 
 	// [START declare_auth]
-//	private FirebaseAuth mAuth;
+	private FirebaseAuth mAuth;
 	// [END declare_auth]
 
 	private GoogleApiClient mGoogleApiClient;
@@ -110,8 +110,8 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 			if (result.isSuccess()) {
 				// Google Sign In was successful, authenticate with Firebase
 				GoogleSignInAccount account = result.getSignInAccount();
-//				firebaseAuthWithGoogle(account);
-				sendMessageToUnityObject(googleTokenReceiverUnityGameObjectName, googleTokenReceivedUnitySuccessCallbackName, account.getIdToken());
+				Log.e(TAG, "onActivityResult: account.getEmail()=" + account.getEmail());
+				firebaseAuthWithGoogle(account);
 			} else {
 				// Google Sign In failed, update UI appropriately
 				// [START_EXCLUDE]
@@ -139,40 +139,39 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 				.build();
 
 		// [START initialize_auth]
-//		mAuth = FirebaseAuth.getInstance();
+		mAuth = FirebaseAuth.getInstance();
 		// [END initialize_auth]
 		Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
 		startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQUEST_CODE);
 	}
 
 	// [START auth_with_google]
-//	private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-//		Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-//
-//		AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-//		mAuth.signInWithCredential(credential)
-//				.addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-//					@Override
-//					public void onComplete(@NonNull Task<AuthResult> task) {
-//						if (task.isSuccessful()) {
-//							// Sign in success, update UI with the signed-in user's information
-//							Log.d(TAG, "signInWithCredential:success");
-//							FirebaseUser user = mAuth.getCurrentUser();
-//
-//						} else {
-//							// If sign in fails, display a message to the user.
-//							Log.w(TAG, "signInWithCredential:failure", task.getException());
-//							Toast.makeText(PictoryTaleUnityPlayerActivity.this, "Authentication failed.",
-//									Toast.LENGTH_SHORT).show();
-//
-//						}
-//
-//						// [START_EXCLUDE]
-//						//hideProgressDialog();
-//						// [END_EXCLUDE]
-//					}
-//				});
-//	}
+	private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
+		Log.e(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+
+		AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+		mAuth.signInWithCredential(credential)
+				.addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+					@Override
+					public void onComplete(@NonNull Task<AuthResult> task) {
+						if (task.isSuccessful()) {
+							// Sign in success, update UI with the signed-in user's information
+							Log.e(TAG, "signInWithCredential:success");
+							//FirebaseUser user = mAuth.getCurrentUser();
+							sendMessageToUnityObject(googleTokenReceiverUnityGameObjectName, googleTokenReceivedUnitySuccessCallbackName, acct.getIdToken());
+						} else {
+							// If sign in fails, display a message to the user.
+							Log.e(TAG, "signInWithCredential:failure", task.getException());
+							Toast.makeText(PictoryTaleUnityPlayerActivity.this, "Authentication failed.",
+									Toast.LENGTH_SHORT).show();
+							sendMessageToUnityObject(googleTokenReceiverUnityGameObjectName, googleTokenReceivedUnitySuccessCallbackName, "");
+						}
+						// [START_EXCLUDE]
+						//hideProgressDialog();
+						// [END_EXCLUDE]
+					}
+				});
+	}
 	// [END auth_with_google]
 
 	public void setSystemUiVisibility(boolean statusBarVisible, boolean navBarVisible)
