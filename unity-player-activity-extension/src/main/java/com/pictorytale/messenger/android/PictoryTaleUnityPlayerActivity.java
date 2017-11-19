@@ -15,12 +15,16 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.MessagingUnityPlayerActivity;
@@ -31,24 +35,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.unity3d.player.UnityPlayer;
 
-public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity implements
-		GoogleApiClient.OnConnectionFailedListener
+public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 {
 	private static final String TAG = PictoryTaleUnityPlayerActivity.class.getSimpleName();
 
-	private static String googleTokenReceiverUnityGameObjectName = "GoogleTokenMessageReceiver";
-	public static final String googleTokenReceivedUnitySuccessCallbackName = "OnDone";
-	public static final String googleTokenReceivedUnityErrorCallbackName = "OnError";
-
-
 	public static final int SHARE_FILE_REQUEST_CODE = 123;
 	public static final int GOOGLE_SIGN_IN_REQUEST_CODE = 124;
-
-	// [START declare_auth]
-	private FirebaseAuth mAuth;
-	// [END declare_auth]
-
-	private GoogleApiClient mGoogleApiClient;
 
 	public static PictoryTaleUnityPlayerActivity instance;
 
@@ -57,9 +49,7 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 		return instance;
 	}
 
-	public static void setGoogleTokenReceiverUnityObjectName(String name) {
-		googleTokenReceiverUnityGameObjectName = name;
-	}
+	private GoogleAccessToken googleAccessToken;
 
 	/**
 	 * Send message to Unity's GameObject
@@ -88,7 +78,6 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 		setSystemUiVisibility(true, true);
 		addUiVisibilityChangeListener();
 		PictoryTaleUnityPlayerActivity.instance = this;
-		com.google.android.gms.auth.api.signin.internal.SignInConfiguration asd;
 	}
 	@Override
 	protected void onStart()
@@ -111,68 +100,29 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 				// Google Sign In was successful, authenticate with Firebase
 				GoogleSignInAccount account = result.getSignInAccount();
 				Log.e(TAG, "onActivityResult: account.getEmail()=" + account.getEmail());
-				firebaseAuthWithGoogle(account);
+
+				if (googleAccessToken != null) {
+					googleAccessToken.firebaseAuthWithGoogle(this, account);
+				}
 			} else {
 				// Google Sign In failed, update UI appropriately
 				// [START_EXCLUDE]
 				// [END_EXCLUDE]
-				sendMessageToUnityObject(googleTokenReceiverUnityGameObjectName, googleTokenReceivedUnitySuccessCallbackName, "");
+				sendMessageToUnityObject(GoogleAccessToken.unityGameObjectName, GoogleAccessToken.unitySuccessCallbackName, "");
 			}
 		}
 	}
 
-	public void signInToGoogleAccount(String defaultWebClientId)
+	public void getGmailAccessToken(String unityGameObjectName, String clientSecret)
 	{
-		Log.e(TAG, "signInToGoogleAccount: defaultWebClientId=" +defaultWebClientId);
-		// [START config_signin]
-		// Configure Google Sign In
-		GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-				.requestIdToken(defaultWebClientId)
-				.requestEmail()
-				.build();
-		// [END config_signin]
-
-		mGoogleApiClient = new GoogleApiClient.Builder(this)
-				//.enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-				.addOnConnectionFailedListener(this)
-				.addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-				.build();
-
-		// [START initialize_auth]
-		mAuth = FirebaseAuth.getInstance();
-		// [END initialize_auth]
-		Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-		startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQUEST_CODE);
+		googleAccessToken = new GoogleAccessToken(unityGameObjectName, clientSecret);
+		googleAccessToken.signInToGoogleAccount(this);
 	}
 
-	// [START auth_with_google]
-	private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
-		Log.e(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-
-		AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-		mAuth.signInWithCredential(credential)
-				.addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-					@Override
-					public void onComplete(@NonNull Task<AuthResult> task) {
-						if (task.isSuccessful()) {
-							// Sign in success, update UI with the signed-in user's information
-							Log.e(TAG, "signInWithCredential:success");
-							//FirebaseUser user = mAuth.getCurrentUser();
-							sendMessageToUnityObject(googleTokenReceiverUnityGameObjectName, googleTokenReceivedUnitySuccessCallbackName, acct.getIdToken());
-						} else {
-							// If sign in fails, display a message to the user.
-							Log.e(TAG, "signInWithCredential:failure", task.getException());
-							Toast.makeText(PictoryTaleUnityPlayerActivity.this, "Authentication failed.",
-									Toast.LENGTH_SHORT).show();
-							sendMessageToUnityObject(googleTokenReceiverUnityGameObjectName, googleTokenReceivedUnitySuccessCallbackName, "");
-						}
-						// [START_EXCLUDE]
-						//hideProgressDialog();
-						// [END_EXCLUDE]
-					}
-				});
+	public void releaseGoogleAccessToken()
+	{
+		googleAccessToken = null;
 	}
-	// [END auth_with_google]
 
 	public void setSystemUiVisibility(boolean statusBarVisible, boolean navBarVisible)
 	{
@@ -364,11 +314,4 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 		});
 	}
 
-	@Override
-	public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-		// An unresolvable error has occurred and Google APIs (including Sign-In) will not
-		// be available.
-		Log.d(TAG, "onConnectionFailed:" + connectionResult);
-		Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
-	}
 }

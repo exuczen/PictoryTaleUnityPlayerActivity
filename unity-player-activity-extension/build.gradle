@@ -29,6 +29,12 @@ dependencies {
     provided "com.google.firebase:firebase-auth:$play_services_version"
     provided "com.google.android.gms:play-services-auth:$play_services_version"
     provided files('libs/classes.jar')
+    compile files('libs/okhttp-2.6.0.jar')
+    compile files('libs/okio-1.6.0.jar')
+
+    android {
+        useLibrary 'org.apache.http.legacy'
+    }
 }
 
 task exportJar(type: Copy) {
