@@ -3,17 +3,15 @@ package com.pictorytale.messenger.android;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -38,17 +36,19 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class GoogleAccessToken implements GoogleApiClient.OnConnectionFailedListener {
+public class GoogleAuthActivity extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener {
 
 
     public static String unityGameObjectName = "GoogleTokenMessageReceiver";
+    public static String clientSecret;
+    public static String clientID;
+
     public static final String unitySuccessCallbackName = "OnDone";
     public static final String unityErrorCallbackName = "OnError";
 
-    private static final String TAG = GoogleAccessToken.class.getSimpleName();
+    private static final String TAG = GoogleAuthActivity.class.getSimpleName();
 
     private static final String webClientID = "156834266108-e3blnen2jvrjrqa2kkcu33u9odmd6hpr.apps.googleusercontent.com";
-    private static final String androidClientID = "156834266108-4cb9jor6c7pid42v376nqcc3oq64g3he.apps.googleusercontent.com";
     private static final String callback = "http://localhost";
     private static final String visibleActions = "https://www.google.com/m8/feeds/contacts/default/full?max-results=500";
     private static final String kRedirectURI = "com.googleusercontent.apps.156834266108-0dsp7r80rns5jrbsvbh3kcvkfij6j1hj:/oauthredirect";
@@ -61,17 +61,45 @@ public class GoogleAccessToken implements GoogleApiClient.OnConnectionFailedList
     private Scope SCOPE_CONTACTS_MANAGE = new Scope("https://www.google.com/m8/feeds");
     private Scope SCOPE_CONTACTS_READ = new Scope("https://www.googleapis.com/auth/contacts.readonly");
     private Scope SCOPE_EMAIL = new Scope(Scopes.EMAIL);
-    private String clientSecret;
+
     // [END declare_auth]
 
     public static void setUnityObjectName(String name) {
         unityGameObjectName = name;
     }
 
-    public GoogleAccessToken(String unityGameObjectName, String clientSecret) {
-        GoogleAccessToken.unityGameObjectName = unityGameObjectName;
-        this.clientSecret = clientSecret;
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        signInToGoogleAccount(this);
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PictoryTaleUnityPlayerActivity.GOOGLE_SIGN_IN_REQUEST_CODE)
+        {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if (result.isSuccess()) {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = result.getSignInAccount();
+                Log.e(TAG, "onActivityResult: account.getEmail()=" + account.getEmail());
+                firebaseAuthWithGoogle(this, account);
+            } else {
+                // Google Sign In failed, update UI appropriately
+                // [START_EXCLUDE]
+                // [END_EXCLUDE]
+                PictoryTaleUnityPlayerActivity.sendMessageToUnityObject(GoogleAuthActivity.unityGameObjectName, GoogleAuthActivity.unityErrorCallbackName, "");
+            }
+        }
+    }
+    //    public GoogleAuthActivity(String unityGameObjectName, String clientSecret) {
+    //        GoogleAuthActivity.unityGameObjectName = unityGameObjectName;
+    //        GoogleAuthActivity.clientSecret = clientSecret;
+    //    }
 
     public void signInToGoogleAccount(Activity context)
     {
@@ -86,8 +114,8 @@ public class GoogleAccessToken implements GoogleApiClient.OnConnectionFailedList
                 .build();
         // [END config_signin]
 
-        mGoogleApiClient = new GoogleApiClient.Builder(context)
-                //.enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addOnConnectionFailedListener(this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
@@ -96,7 +124,7 @@ public class GoogleAccessToken implements GoogleApiClient.OnConnectionFailedList
         mAuth = FirebaseAuth.getInstance();
         // [END initialize_auth]
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        context.startActivityForResult(signInIntent, PictoryTaleUnityPlayerActivity.GOOGLE_SIGN_IN_REQUEST_CODE);
+        this.startActivityForResult(signInIntent, PictoryTaleUnityPlayerActivity.GOOGLE_SIGN_IN_REQUEST_CODE);
     }
 
     private void signOutFromGoogleAccount() {
@@ -119,7 +147,7 @@ public class GoogleAccessToken implements GoogleApiClient.OnConnectionFailedList
         String authCode = acct.getServerAuthCode();
         OkHttpClient client = new OkHttpClient();
         Log.e(TAG, "getAccessToken: ");
-        Log.e(TAG, "getAccessToken: client_id="+androidClientID);
+        Log.e(TAG, "getAccessToken: client_id="+clientID);
         Log.e(TAG, "getAccessToken: client_secret="+clientSecret);
         Log.e(TAG, "getAccessToken: redirect_uri="+kRedirectURI);
         Log.e(TAG, "getAccessToken: code="+authCode);
@@ -149,7 +177,7 @@ public class GoogleAccessToken implements GoogleApiClient.OnConnectionFailedList
 
         RequestBody requestBody = new FormEncodingBuilder()
                 .add("grant_type", "authorization_code")
-                .add("client_id", androidClientID)   // something like : ...apps.googleusercontent.com
+                .add("client_id", clientID)   // something like : ...apps.googleusercontent.com
                 .add("client_secret", clientSecret)
                 .add("redirect_uri", kRedirectURI)
                 .add("code", authCode) // device code.
@@ -218,6 +246,6 @@ public class GoogleAccessToken implements GoogleApiClient.OnConnectionFailedList
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        Log.d(TAG, "onConnectionFailed:*" + connectionResult);
     }
 }

@@ -6,33 +6,17 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.Scopes;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.MessagingUnityPlayerActivity;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 import com.unity3d.player.UnityPlayer;
 
 public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
@@ -49,7 +33,7 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 		return instance;
 	}
 
-	private GoogleAccessToken googleAccessToken;
+	private GoogleAuthActivity googleAuthActivity;
 
 	/**
 	 * Send message to Unity's GameObject
@@ -101,27 +85,30 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 				GoogleSignInAccount account = result.getSignInAccount();
 				Log.e(TAG, "onActivityResult: account.getEmail()=" + account.getEmail());
 
-				if (googleAccessToken != null) {
-					googleAccessToken.firebaseAuthWithGoogle(this, account);
+				if (googleAuthActivity != null) {
+					googleAuthActivity.firebaseAuthWithGoogle(this, account);
 				}
 			} else {
 				// Google Sign In failed, update UI appropriately
 				// [START_EXCLUDE]
 				// [END_EXCLUDE]
-				sendMessageToUnityObject(GoogleAccessToken.unityGameObjectName, GoogleAccessToken.unitySuccessCallbackName, "");
+				sendMessageToUnityObject(GoogleAuthActivity.unityGameObjectName, GoogleAuthActivity.unitySuccessCallbackName, "");
 			}
 		}
 	}
 
-	public void getGmailAccessToken(String unityGameObjectName, String clientSecret)
+	public void getGmailAccessToken(String unityGameObjectName, String clientID, String clientSecret)
 	{
-		googleAccessToken = new GoogleAccessToken(unityGameObjectName, clientSecret);
-		googleAccessToken.signInToGoogleAccount(this);
+		GoogleAuthActivity.clientID = clientID;
+		GoogleAuthActivity.clientSecret = clientSecret;
+		GoogleAuthActivity.unityGameObjectName = unityGameObjectName;
+		Intent myIntent = new Intent(this, GoogleAuthActivity.class);
+		this.startActivity(myIntent);
 	}
 
 	public void releaseGoogleAccessToken()
 	{
-		googleAccessToken = null;
+		googleAuthActivity = null;
 	}
 
 	public void setSystemUiVisibility(boolean statusBarVisible, boolean navBarVisible)
