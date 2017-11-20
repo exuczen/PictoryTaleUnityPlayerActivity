@@ -138,6 +138,12 @@ public class GoogleAuth /*extends FragmentActivity*/ implements GoogleApiClient.
         }
     }
 
+    public void disconnectFromGoogleAccount() {
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
     private void signInToGoogleAccount(Activity context) {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         context.startActivityForResult(signInIntent, PictoryTaleUnityPlayerActivity.GOOGLE_SIGN_IN_REQUEST_CODE);
@@ -233,6 +239,7 @@ public class GoogleAuth /*extends FragmentActivity*/ implements GoogleApiClient.
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    signOutFromGoogleAccount();
                     PictoryTaleUnityPlayerActivity.sendMessageToUnityObject(unityGameObjectName, unityErrorCallbackName, e.getMessage());
                 }
             }
@@ -256,6 +263,7 @@ public class GoogleAuth /*extends FragmentActivity*/ implements GoogleApiClient.
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.e(TAG, "signInWithCredential:failure", task.getException());
+                            signOutFromGoogleAccount();
                         }
                         // [START_EXCLUDE]
                         // [END_EXCLUDE]

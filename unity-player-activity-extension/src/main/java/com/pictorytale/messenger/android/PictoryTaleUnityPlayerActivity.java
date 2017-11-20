@@ -92,6 +92,9 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 				// Google Sign In failed, update UI appropriately
 				// [START_EXCLUDE]
 				// [END_EXCLUDE]
+				if (googleAuth != null) {
+					googleAuth.disconnectFromGoogleAccount();
+				}
 				sendMessageToUnityObject(GoogleAuth.unityGameObjectName, GoogleAuth.unityErrorCallbackName, "");
 			}
 		}
