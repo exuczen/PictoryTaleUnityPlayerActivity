@@ -262,7 +262,9 @@ public class GoogleAuth /*extends FragmentActivity*/ implements GoogleApiClient.
                             getAccessToken(acct);
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.e(TAG, "signInWithCredential:failure", task.getException());
+                            Exception e = task.getException();
+                            Log.e(TAG, "signInWithCredential:failure", e);
+                            PictoryTaleUnityPlayerActivity.sendMessageToUnityObject(unityGameObjectName, unityErrorCallbackName, e != null ? e.getMessage() : "");
                             signOutFromGoogleAccount();
                         }
                         // [START_EXCLUDE]
