@@ -51,7 +51,8 @@ public class GoogleAuthActivity extends FragmentActivity implements GoogleApiCli
     private static final String webClientID = "156834266108-e3blnen2jvrjrqa2kkcu33u9odmd6hpr.apps.googleusercontent.com";
     private static final String callback = "http://localhost";
     private static final String visibleActions = "https://www.google.com/m8/feeds/contacts/default/full?max-results=500";
-    private static final String kRedirectURI = "com.googleusercontent.apps.156834266108-0dsp7r80rns5jrbsvbh3kcvkfij6j1hj:/oauthredirect";
+    //private static final String kRedirectURI = "com.googleusercontent.apps.156834266108-0dsp7r80rns5jrbsvbh3kcvkfij6j1hj:/oauthredirect";
+    private static final String kRedirectURI = "https://pictorygramtest.firebaseapp.com/__/auth/handler";
     private static final String googleAuthorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
     private static final String googleTokenEndpoint = "https://www.googleapis.com/oauth2/v4/token";
 
