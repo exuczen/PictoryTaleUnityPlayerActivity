@@ -33,7 +33,7 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 		return instance;
 	}
 
-	private GoogleAuthActivity googleAuthActivity;
+	private GoogleAuth googleAuth;
 
 	/**
 	 * Send message to Unity's GameObject
@@ -83,32 +83,32 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 			if (result.isSuccess()) {
 				// Google Sign In was successful, authenticate with Firebase
 				GoogleSignInAccount account = result.getSignInAccount();
-				Log.e(TAG, "onActivityResult: account.getEmail()=" + account.getEmail());
-
-				if (googleAuthActivity != null) {
-					googleAuthActivity.firebaseAuthWithGoogle(this, account);
+				Log.w(TAG, "onActivityResult: account.getEmail()=" + account.getEmail());
+				if (googleAuth != null) {
+					googleAuth.clientIsSignedIn = true;
+					googleAuth.firebaseAuthWithGoogle(this, account);
 				}
 			} else {
 				// Google Sign In failed, update UI appropriately
 				// [START_EXCLUDE]
 				// [END_EXCLUDE]
-				sendMessageToUnityObject(GoogleAuthActivity.unityGameObjectName, GoogleAuthActivity.unitySuccessCallbackName, "");
+				sendMessageToUnityObject(GoogleAuth.unityGameObjectName, GoogleAuth.unityErrorCallbackName, "");
 			}
 		}
 	}
 
-	public void getGmailAccessToken(String unityGameObjectName, String clientID, String clientSecret)
-	{
-		GoogleAuthActivity.clientID = clientID;
-		GoogleAuthActivity.clientSecret = clientSecret;
-		GoogleAuthActivity.unityGameObjectName = unityGameObjectName;
-		Intent myIntent = new Intent(this, GoogleAuthActivity.class);
-		this.startActivity(myIntent);
+	public void getGmailAccessToken(String unityGameObjectName, String clientSecretJSONString, String googleTokenEndpoint) {
+		googleAuth = new GoogleAuth(this, unityGameObjectName, clientSecretJSONString, googleTokenEndpoint);
+		googleAuth.connectWithGoogleAccount(this);
 	}
 
-	public void releaseGoogleAccessToken()
+	public void releaseGmailAccessToken()
 	{
-		googleAuthActivity = null;
+		if (googleAuth != null)
+		{
+			googleAuth.signOutFromGoogleAccount();
+			googleAuth = null;
+		}
 	}
 
 	public void setSystemUiVisibility(boolean statusBarVisible, boolean navBarVisible)
