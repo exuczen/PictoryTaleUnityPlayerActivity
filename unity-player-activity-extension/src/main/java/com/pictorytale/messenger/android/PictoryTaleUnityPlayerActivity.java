@@ -89,7 +89,8 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 				Log.w(TAG, "onActivityResult: account.getEmail()=" + account.getEmail());
 				if (googleAuth != null) {
 					googleAuth.clientIsSignedIn = true;
-					googleAuth.firebaseAuthWithGoogle(this, account);
+					//googleAuth.firebaseAuthWithGoogle(this, account);
+					googleAuth.getAccessToken(account);
 				}
 			} else {
 				// Google Sign In failed, update UI appropriately

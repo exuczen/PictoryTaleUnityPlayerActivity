@@ -20,11 +20,11 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
+//import com.google.firebase.auth.AuthCredential;
+//import com.google.firebase.auth.AuthResult;
+//import com.google.firebase.auth.FirebaseAuth;
+//import com.google.firebase.auth.FirebaseUser;
+//import com.google.firebase.auth.GoogleAuthProvider;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
@@ -60,7 +60,7 @@ public class GoogleAuth /*extends FragmentActivity*/ implements GoogleApiClient.
     public boolean clientIsSignedIn;
 
     // [START declare_auth]
-    private FirebaseAuth mAuth;
+    //    private FirebaseAuth mAuth;
     private GoogleApiClient mGoogleApiClient;
     private Scope SCOPE_CONTACTS_MANAGE = new Scope("https://www.google.com/m8/feeds");
     private Scope SCOPE_CONTACTS_READ = new Scope("https://www.googleapis.com/auth/contacts.readonly");
@@ -128,7 +128,7 @@ public class GoogleAuth /*extends FragmentActivity*/ implements GoogleApiClient.
                 .build();
 
         // [START initialize_auth]
-        mAuth = FirebaseAuth.getInstance();
+        //        mAuth = FirebaseAuth.getInstance();
         // [END initialize_auth]
     }
 
@@ -171,13 +171,13 @@ public class GoogleAuth /*extends FragmentActivity*/ implements GoogleApiClient.
 
     public void signOutFromGoogleAccount() {
         // Check if user is signed in (non-null) and update UI accordingly.
-        if (mAuth != null) {
-            FirebaseUser currentUser = mAuth.getCurrentUser();
-            // Firebase sign out
-            if (currentUser != null) {
-                mAuth.signOut();
-            }
-        }
+        //        if (mAuth != null) {
+        //            FirebaseUser currentUser = mAuth.getCurrentUser();
+        //            // Firebase sign out
+        //            if (currentUser != null) {
+        //                mAuth.signOut();
+        //            }
+        //        }
         // Google sign out
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected() && clientIsSignedIn) {
             Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
@@ -247,31 +247,31 @@ public class GoogleAuth /*extends FragmentActivity*/ implements GoogleApiClient.
     }
 
     // [START auth_with_google]
-    public void firebaseAuthWithGoogle(final Activity context, final GoogleSignInAccount acct) {
-        Log.w(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(context, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.w(TAG, "signInWithCredential:success");
-                            //FirebaseUser user = mAuth.getCurrentUser();
-                            getAccessToken(acct);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Exception e = task.getException();
-                            Log.e(TAG, "signInWithCredential:failure", e);
-                            PictoryTaleUnityPlayerActivity.sendMessageToUnityObject(unityGameObjectName, unityErrorCallbackName, e != null ? e.getMessage() : "");
-                            signOutFromGoogleAccount();
-                        }
-                        // [START_EXCLUDE]
-                        // [END_EXCLUDE]
-                    }
-                });
-    }
+    //    public void firebaseAuthWithGoogle(final Activity context, final GoogleSignInAccount acct) {
+    //        Log.w(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+    //
+    //        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+    //        mAuth.signInWithCredential(credential)
+    //                .addOnCompleteListener(context, new OnCompleteListener<AuthResult>() {
+    //                    @Override
+    //                    public void onComplete(@NonNull Task<AuthResult> task) {
+    //                        if (task.isSuccessful()) {
+    //                            // Sign in success, update UI with the signed-in user's information
+    //                            Log.w(TAG, "signInWithCredential:success");
+    //                            //FirebaseUser user = mAuth.getCurrentUser();
+    //                            getAccessToken(acct);
+    //                        } else {
+    //                            // If sign in fails, display a message to the user.
+    //                            Exception e = task.getException();
+    //                            Log.e(TAG, "signInWithCredential:failure", e);
+    //                            PictoryTaleUnityPlayerActivity.sendMessageToUnityObject(unityGameObjectName, unityErrorCallbackName, e != null ? e.getMessage() : "");
+    //                            signOutFromGoogleAccount();
+    //                        }
+    //                        // [START_EXCLUDE]
+    //                        // [END_EXCLUDE]
+    //                    }
+    //                });
+    //    }
     // [END auth_with_google]
 
     @Override
