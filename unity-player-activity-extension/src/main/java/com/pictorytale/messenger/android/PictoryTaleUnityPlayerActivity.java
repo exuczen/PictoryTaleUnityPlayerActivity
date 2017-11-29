@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -23,6 +24,8 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 {
 	private static final String TAG = PictoryTaleUnityPlayerActivity.class.getSimpleName();
 
+	public static final int VIEW_DIR_REQUEST_CODE = 121;
+	public static final int PLAY_VIDEO_REQUEST_CODE = 122;
 	public static final int SHARE_FILE_REQUEST_CODE = 123;
 	public static final int GOOGLE_SIGN_IN_REQUEST_CODE = 124;
 
@@ -99,6 +102,21 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 			}
 		}
 	}
+
+	public void playVideo(String videoPath)
+	{
+		Intent intent = new Intent(this, ViewIntentActivity.class);
+		intent.putExtra("videoPath", videoPath);
+		startActivity(intent);
+	}
+
+	public void openMoviesFolder()
+	{
+		Intent intent = new Intent(this, ViewIntentActivity.class);
+		intent.putExtra("envDirType", Environment.DIRECTORY_MOVIES);
+		startActivity(intent);
+	}
+
 
 	public void getGmailAccessToken(String unityGameObjectName, String clientSecretJSONString, String googleTokenEndpoint) {
 		googleAuth = new GoogleAuth(this, unityGameObjectName, clientSecretJSONString, googleTokenEndpoint);
