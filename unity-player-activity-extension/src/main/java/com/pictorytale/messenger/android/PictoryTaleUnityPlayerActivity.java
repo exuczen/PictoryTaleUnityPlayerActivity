@@ -1,5 +1,6 @@
 package com.pictorytale.messenger.android;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -7,6 +8,7 @@ import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -131,6 +133,18 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 			googleAuth.signOutFromGoogleAccount();
 			googleAuth = null;
 		}
+	}
+
+	public String GetNetworkCountyIso()
+	{
+		TelephonyManager mTelephonyMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+		return mTelephonyMgr.getNetworkCountryIso();
+	}
+
+	public String GetNetworkOperator()
+	{
+		TelephonyManager mTelephonyMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+		return mTelephonyMgr.getNetworkOperatorName();
 	}
 
 	public void setSystemUiVisibility(boolean statusBarVisible, boolean navBarVisible)
