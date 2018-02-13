@@ -358,28 +358,17 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 		else
 		{
 			ActivityCompat.requestPermissions(this, permissions, GRANT_PERMISSIONS);
-			//			if (Build.VERSION.SDK_INT >= 23) {
-			//			} else {
-			//				AlertDialog.Builder alertDialog = Utils.BuildAlertDialog(this, "Permissions required", "You have to grant all requested permissions.");
-			//				alertDialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-			//					public void onClick(DialogInterface dialog, int which) {
-			//						instance.finish();
-			//					}
-			//				});
-			//				alertDialog.show();
-			//			}
 		}
 		return hasAllPermissions;
 	}
 
-	@TargetApi(23)
 	@Override
-	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+	public void onRequestPermissionsResult(int requestCode, final String permissions[], int[] grantResults) {
 		switch (requestCode) {
 			case GRANT_PERMISSIONS: {
 				// If request is cancelled, the result arrays are empty.
-				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					boolean allPermissionsGranted = true;
+				boolean allPermissionsGranted = true;
+				if (grantResults.length > 0) {
 					for (int i=0; i<grantResults.length; i++)
 					{
 						if (grantResults[i] == PackageManager.PERMISSION_GRANTED)
@@ -389,6 +378,7 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 						else
 						{
 							sendMessageToUnityObject("AppPermissions", "OnPermissionDenied", permissions[i]);
+							allPermissionsGranted = false;
 						}
 					}
 				} else {
@@ -396,10 +386,21 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 					{
 						sendMessageToUnityObject("AppPermissions", "OnPermissionDenied", permissions[i]);
 					}
+					allPermissionsGranted = false;
 					// permission denied, boo! Disable the
 					// functionality that depends on this permission.
 				}
-				return;
+				if (!allPermissionsGranted)
+				{
+					AlertDialog.Builder alertDialog = Utils.BuildAlertDialog(this, "Permissions required", "You have to grant all requested permissions.");
+					alertDialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(instance, permissions, GRANT_PERMISSIONS);
+							//instance.finish();
+						}
+					});
+					alertDialog.show();
+				}
 			}
 			// other 'case' lines to check for other
 			// permissions this app might request.
