@@ -1,13 +1,20 @@
 package com.pictorytale.messenger.android;
 
+import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -25,6 +32,8 @@ import com.unity3d.player.UnityPlayer;
 public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 {
 	private static final String TAG = PictoryTaleUnityPlayerActivity.class.getSimpleName();
+
+	public static final int GRANT_PERMISSIONS = 1;
 
 	public static final int VIEW_DIR_REQUEST_CODE = 121;
 	public static final int PLAY_VIDEO_REQUEST_CODE = 122;
@@ -335,6 +344,89 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 				//Log.e("setStatusBarThemeDark", "setStatusBarThemeDark");
 			}
 		});
+	}
+
+	public boolean grantPermissions(String[] permissions)
+	{
+		boolean hasAllPermissions = hasPermissions(this, permissions);
+		if (hasAllPermissions)
+		{
+			for (int i = 0; i < permissions.length; i++) {
+				sendMessageToUnityObject("AppPermissions", "OnPermissionGranted", permissions[i]);
+			}
+		}
+		else
+		{
+			ActivityCompat.requestPermissions(this, permissions, GRANT_PERMISSIONS);
+			//			if (Build.VERSION.SDK_INT >= 23) {
+			//			} else {
+			//				AlertDialog.Builder alertDialog = Utils.BuildAlertDialog(this, "Permissions required", "You have to grant all requested permissions.");
+			//				alertDialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+			//					public void onClick(DialogInterface dialog, int which) {
+			//						instance.finish();
+			//					}
+			//				});
+			//				alertDialog.show();
+			//			}
+		}
+		return hasAllPermissions;
+	}
+
+	@TargetApi(23)
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+		switch (requestCode) {
+			case GRANT_PERMISSIONS: {
+				// If request is cancelled, the result arrays are empty.
+				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+					boolean allPermissionsGranted = true;
+					for (int i=0; i<grantResults.length; i++)
+					{
+						if (grantResults[i] == PackageManager.PERMISSION_GRANTED)
+						{
+							sendMessageToUnityObject("AppPermissions", "OnPermissionGranted", permissions[i]);
+						}
+						else
+						{
+							sendMessageToUnityObject("AppPermissions", "OnPermissionDenied", permissions[i]);
+						}
+					}
+				} else {
+					for (int i=0; i<permissions.length; i++)
+					{
+						sendMessageToUnityObject("AppPermissions", "OnPermissionDenied", permissions[i]);
+					}
+					// permission denied, boo! Disable the
+					// functionality that depends on this permission.
+				}
+				return;
+			}
+			// other 'case' lines to check for other
+			// permissions this app might request.
+		}
+	}
+
+	public static boolean hasPermissions(Context context, String... permissions) {
+		if (context != null && permissions != null) {
+			for (String permission : permissions) {
+				if (!hasPermission(context, permission)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	public static boolean hasPermission(Context context, String permission)
+	{
+		if (Build.VERSION.SDK_INT >= 23) {
+			//return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+			return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
+		} else {
+			//PackageManager pm = context.getPackageManager();
+			//return pm.checkPermission(permission, context.getPackageName()) == PackageManager.PERMISSION_GRANTED;
+			return PermissionChecker.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
+		}
 	}
 
 }
