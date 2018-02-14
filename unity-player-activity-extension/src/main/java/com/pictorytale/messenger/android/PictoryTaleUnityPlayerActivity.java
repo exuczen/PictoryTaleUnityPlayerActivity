@@ -352,7 +352,7 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 		if (hasAllPermissions)
 		{
 			for (int i = 0; i < permissions.length; i++) {
-				sendMessageToUnityObject("AppPermissions", "OnPermissionGranted", permissions[i]);
+				sendMessageToUnityObject("PermissionsMessageReceiver", "OnGranted", permissions[i]);
 			}
 		}
 		else
@@ -373,18 +373,18 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 					{
 						if (grantResults[i] == PackageManager.PERMISSION_GRANTED)
 						{
-							sendMessageToUnityObject("AppPermissions", "OnPermissionGranted", permissions[i]);
+							sendMessageToUnityObject("PermissionsMessageReceiver", "OnGranted", permissions[i]);
 						}
 						else
 						{
-							sendMessageToUnityObject("AppPermissions", "OnPermissionDenied", permissions[i]);
+							sendMessageToUnityObject("PermissionsMessageReceiver", "OnDenied", permissions[i]);
 							allPermissionsGranted = false;
 						}
 					}
 				} else {
 					for (int i=0; i<permissions.length; i++)
 					{
-						sendMessageToUnityObject("AppPermissions", "OnPermissionDenied", permissions[i]);
+						sendMessageToUnityObject("PermissionsMessageReceiver", "OnDenied", permissions[i]);
 					}
 					allPermissionsGranted = false;
 					// permission denied, boo! Disable the
