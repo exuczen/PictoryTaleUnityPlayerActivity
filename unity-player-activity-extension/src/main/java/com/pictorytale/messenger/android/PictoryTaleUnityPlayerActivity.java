@@ -1,6 +1,5 @@
 package com.pictorytale.messenger.android;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -39,6 +38,7 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 	public static final int PLAY_VIDEO_REQUEST_CODE = 122;
 	public static final int SHARE_FILE_REQUEST_CODE = 123;
 	public static final int GOOGLE_SIGN_IN_REQUEST_CODE = 124;
+	public static final int MOVE_ACTIVITY_BACK_AND_FORTH_REQUEST_CODE = 125;
 
 	public static PictoryTaleUnityPlayerActivity instance;
 
@@ -87,6 +87,8 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
+		Log.d(TAG, "onActivityResult: resultCode = "+resultCode);
+
 		if (requestCode == PictoryTaleUnityPlayerActivity.SHARE_FILE_REQUEST_CODE)
 		{
 			sendMessageToUnityObject(NativeShare.unityGameObjectName, NativeShare.unitySuccessCallbackName, "requestCode=" + requestCode);
@@ -113,6 +115,27 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 				sendMessageToUnityObject(GoogleAuth.unityGameObjectName, GoogleAuth.unityErrorCallbackName, "");
 			}
 		}
+		else if (requestCode == PictoryTaleUnityPlayerActivity.MOVE_ACTIVITY_BACK_AND_FORTH_REQUEST_CODE)
+		{
+			// resultCode for this requestCode is RESULT_CANCELED = 0
+			Intent intent = new Intent(this, PictoryTaleUnityPlayerActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			startActivity(intent);
+
+			//			Intent intent = new Intent(this, PictoryTaleUnityPlayerActivity.class);
+			//			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // You need this if starting the activity from a service
+			//			intent.setAction(Intent.ACTION_MAIN);
+			//			intent.addCategory(Intent.CATEGORY_LAUNCHER);
+			//			startActivity(intent);
+		}
+	}
+
+	public void moveActivityToBackAndForth()
+	{
+		Intent startMain = new Intent(Intent.ACTION_MAIN);
+		startMain.addCategory(Intent.CATEGORY_HOME);
+		startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivityForResult(startMain, MOVE_ACTIVITY_BACK_AND_FORTH_REQUEST_CODE);
 	}
 
 	public void playVideo(String videoPath)
@@ -150,7 +173,14 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 		return mTelephonyMgr.getNetworkCountryIso();
 	}
 
-	public String GetNetworkOperator()
+	public String GetNetworkOperatorMCC()
+	{
+		TelephonyManager mTelephonyMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+		String mccmnc = mTelephonyMgr.getNetworkOperator();
+		return mccmnc.substring(0,3);
+	}
+
+	public String GetNetworkOperatorName()
 	{
 		TelephonyManager mTelephonyMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 		return mTelephonyMgr.getNetworkOperatorName();
