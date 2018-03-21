@@ -87,7 +87,7 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		Log.d(TAG, "onActivityResult: resultCode = "+resultCode);
+		Log.d(TAG, "onActivityResult: requestCode=" + requestCode + " resultCode=" + resultCode);
 
 		if (requestCode == PictoryTaleUnityPlayerActivity.SHARE_FILE_REQUEST_CODE)
 		{
