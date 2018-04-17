@@ -2,7 +2,6 @@ package com.aliessmael.contactslist;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -21,6 +20,9 @@ import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class ContactList {
@@ -46,7 +48,7 @@ public class ContactList {
 	static boolean mLoadNumbers;
 	static boolean mLoadEmails;
 	static boolean mLoadConnections;
-	public static void LoadInformation( Activity _activity , boolean _loadPhoto ,boolean _loadNumbers,  boolean _loadEmails , boolean _loadConnections)
+	public static int LoadInformation( Activity _activity , boolean _loadPhoto ,boolean _loadNumbers,  boolean _loadEmails , boolean _loadConnections)
 	{
 		activity = _activity;
 		mLoadPhoto = _loadPhoto;
@@ -58,20 +60,67 @@ public class ContactList {
 		{
 			public void run()
 			{
-				LoadInformation_thread();
+				LoadInformation();
 			}
 		};
 		new Thread(runnable).start();
+		return 0;
 	}
 
-	static byte[] getContact( int id )
+	private static JSONObject getJSONObjectFromContact(Contact c) {
+		JSONObject jso = new JSONObject();
+		try {
+			jso.put("Id", c.Id);
+			jso.put("Name", c.Name);
+
+			if (c.Phones != null && c.Phones.size() > 0) {
+				JSONArray phonesArray = new JSONArray();
+				for (int i = 0; i < c.Phones.size(); i++) {
+					ContactPhone contactPhone = c.Phones.get(i);
+					JSONObject contact = new JSONObject();
+					contact.put("Number", contactPhone.Number);
+					contact.put("Type", contactPhone.Type);
+					phonesArray.put(contact);
+				}
+				jso.put("Phones", phonesArray);
+
+			}
+			if (c.Emails != null && c.Emails.size() > 0)
+			{
+				JSONArray emailsArray = new JSONArray();
+				for (int i = 0; i < c.Emails.size(); i++) {
+					ContactEmail contactEmail = c.Emails.get(i);
+					JSONObject email = new JSONObject();
+					email.put("Address", contactEmail.Address);
+					email.put("Type", contactEmail.Type);
+					emailsArray.put(email);
+				}
+				jso.put("Emails", emailsArray);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return jso;
+	}
+
+	public static String getContactJSONString( int id )
 	{
+		Contact contact = contactList.get( id );
+		return getJSONObjectFromContact(contact).toString();
+	}
+
+
+	public static byte[] getContact( int id )
+	{
+		Contact.Buffer.clear();
 		Contact contact = contactList.get( id );
 		byte[] data = contact.toBytes();
 		contact.unityGotThis = true;
 		return data;
 	}
-	public static void LoadInformation_thread( )
+
+	public static int LoadInformation( )
 	{
 		fillSimInfo(activity);
 
@@ -91,34 +140,44 @@ public class ContactList {
 
 			Contact.Buffer = ByteBuffer.allocate(1024 * 1024);
 			Contact.Buffer.order(ByteOrder.LITTLE_ENDIAN);
-			for( int i = 0 ; i < contactList.size() ; i++ )
-			{
-				Contact.Buffer.clear();
-				Contact c = contactList.get( i );
-				if( mLoadPhoto )
-				{
-					c.Photo = getPhoto( c );
-				}
 
-				UnityPlayer.UnitySendMessage( "ContactsListMessageReceiver", "OnContactReady", Integer.toString(i) );
-				while (!c.unityGotThis)
+			if (mLoadPhoto)
+			{
+				for( int i = 0 ; i < contactList.size() ; i++ )
 				{
-					Thread.sleep(1);
-				};
+					Contact.Buffer.clear();
+					Contact c = contactList.get(i);
+					c.Photo = getPhoto(c);
+					//				UnityPlayer.UnitySendMessage( "ContactsListMessageReceiver", "OnContactReady", Integer.toString(i) );
+					//				while (!c.unityGotThis)
+					//				{
+					//					Thread.sleep(1);
+					//				};
+				}
 			}
 
-			UnityPlayer.UnitySendMessage( "ContactsListMessageReceiver", "OnInitializeDone", "" );
-			contactList = null;
-			contactsMap = null;
-			Contact.Buffer = null;
+			UnityPlayer.UnitySendMessage( "ContactsListMessageReceiver", "OnInitializeDone_android", Integer.toString(contactList.size()) );
+			return contactList.size();
 
 		} catch (Exception e) {
 			String error = Log.getStackTraceString( e);
 			UnityPlayer.UnitySendMessage("ContactsListMessageReceiver", "OnInitializeFail", error);
+			return 0;
 
 		}
 	}
 
+	public static void clearContactsBuffer()
+	{
+		Contact.Buffer.clear();
+	}
+
+	public static void clearContactsList()
+	{
+		contactList = null;
+		contactsMap = null;
+		Contact.Buffer = null;
+	}
 
 	static void loadNames()
 	{

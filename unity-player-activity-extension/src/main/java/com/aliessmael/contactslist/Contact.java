@@ -13,14 +13,14 @@ import java.util.List;
 
 public class Contact {
 
-	String 				Id 	;
-	String 				Name ;
+	String Id;
+	String Name;
 
-	byte[] 				Photo 		;
+	byte[] Photo;
 
-    List<ContactPhone> 	Phones ;
-	List<ContactEmail> 	Emails;
-	List<String>	   	Connections ;
+	public List<ContactPhone> Phones;
+	public List<ContactEmail> Emails;
+	List<String> Connections;
 
 	public static ByteBuffer Buffer = null;
 
