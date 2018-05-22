@@ -91,8 +91,14 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 
 		if (requestCode == PictoryTaleUnityPlayerActivity.SHARE_FILE_REQUEST_CODE)
 		{
-			String[] appData = data.getDataString().replace("content://", "").split("/");
-
+			String[] appData = new String[];
+			if(data != null) {
+				if(!data.getDataString().isEmpty()) {
+					appData = data.getDataString().replace("content://", "").split("/");
+				}else{
+					appData = new String[]{"None"};
+				}
+			}
 			sendMessageToUnityObject(NativeShare.unityGameObjectName, NativeShare.unitySuccessCallbackName, appData[0]);
 		}
 		else if (requestCode == PictoryTaleUnityPlayerActivity.GOOGLE_SIGN_IN_REQUEST_CODE)
