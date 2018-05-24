@@ -1,5 +1,6 @@
 package com.pictorytale.messenger.android;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -467,6 +468,13 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 			//return pm.checkPermission(permission, context.getPackageName()) == PackageManager.PERMISSION_GRANTED;
 			return PermissionChecker.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
 		}
+	}
+
+	public long getTotalMemory() {
+		ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+		ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+		activityManager.getMemoryInfo(memoryInfo);
+		return memoryInfo.totalMem;
 	}
 
 }
