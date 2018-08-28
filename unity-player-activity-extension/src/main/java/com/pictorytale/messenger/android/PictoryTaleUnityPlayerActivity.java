@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -187,7 +188,10 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 	{
 		TelephonyManager mTelephonyMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 		String mccmnc = mTelephonyMgr.getNetworkOperator();
-		return mccmnc.substring(0,3);
+		if (!TextUtils.isEmpty(mccmnc) && mccmnc.length() >= 3)
+			return mccmnc.substring(0, 3);
+		else
+			return mccmnc;
 	}
 
 	public String GetNetworkOperatorName()
