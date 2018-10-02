@@ -64,16 +64,9 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		// Clear low profile flags to apply non-fullscreen mode before splash screen
-		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-		// https://stackoverflow.com/questions/29311078/android-completely-transparent-status-bar
-		//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-		//			getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-		//		}
-
-		this.setStatusBarColor(Color.TRANSPARENT);
-
+		setFullScreen(false);
+		setStatusBarColor(Color.TRANSPARENT);
 		//showSystemUi();
 		setSystemUiVisibility(true, true);
 		addUiVisibilityChangeListener();
@@ -198,6 +191,16 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 	{
 		TelephonyManager mTelephonyMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 		return mTelephonyMgr.getNetworkOperatorName();
+	}
+
+	// Clear low profile flags to apply non-fullscreen mode before splash screen
+	public void setFullScreen(boolean value)
+	{
+		if (value)
+			getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		else
+			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		//getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 	}
 
 	public void setSystemUiVisibility(boolean statusBarVisible, boolean navBarVisible)
