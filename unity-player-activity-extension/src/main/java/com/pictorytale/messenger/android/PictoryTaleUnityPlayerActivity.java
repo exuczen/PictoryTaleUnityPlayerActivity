@@ -194,13 +194,22 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 	}
 
 	// Clear low profile flags to apply non-fullscreen mode before splash screen
-	public void setFullScreen(boolean value)
-	{
+	public void setFullScreen(boolean value) {
 		if (value)
 			getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		else
 			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		//getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+	}
+
+	public void setFullScreenOnUiThread(final boolean value) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (instance != null)
+					instance.setFullScreen(value);
+			}
+		});
 	}
 
 	public void setSystemUiVisibility(boolean statusBarVisible, boolean navBarVisible)
