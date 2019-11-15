@@ -24,13 +24,13 @@ android {
 
 dependencies {
     //    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile "com.android.support:appcompat-v7:$supportlib_version"
-    provided files('libs/libmessaging_unity_player_activity.jar')
-    provided "com.google.firebase:firebase-auth:$play_services_version"
-    provided "com.google.android.gms:play-services-auth:$play_services_version"
-    provided files('libs/classes.jar')
-    compile files('libs/okhttp-2.6.0.jar')
-    compile files('libs/okio-1.6.0.jar')
+    api "com.android.support:appcompat-v7:$supportlib_version"
+    compileOnly files('libs/libmessaging_unity_player_activity.jar')
+    compileOnly "com.google.firebase:firebase-auth:$play_services_version"
+    compileOnly "com.google.android.gms:play-services-auth:$play_services_version"
+    compileOnly  files('libs/classes.jar')
+    api files('libs/okhttp-2.6.0.jar')
+    api files('libs/okio-1.6.0.jar')
 
     android {
         useLibrary 'org.apache.http.legacy'
@@ -38,7 +38,7 @@ dependencies {
 }
 
 task exportJar(type: Copy) {
-    from('build/intermediates/bundles/release/classes.jar')
+    from('build/intermediates/packaged-classes/release/classes.jar')
     into('release/')
     rename('classes.jar', 'unity-player-activity-extension.jar')
 }
