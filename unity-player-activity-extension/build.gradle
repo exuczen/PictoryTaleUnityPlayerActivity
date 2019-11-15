@@ -3,15 +3,11 @@ apply plugin: 'com.android.library'
 //apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 26
-    //buildToolsVersion "26.0.2"
-    //Error:The specified Android SDK Build Tools version (26.0.0) is ignored, as it is below the minimum supported version (26.0.2) for Android Gradle Plugin 3.0.0.
-    //Android SDK Build Tools 26.0.2 will be used.
-    //To suppress this warning, remove "buildToolsVersion '26.0.0'" from your build.gradle file, as each version of the Android Gradle Plugin now has a default version of the build tools.
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 28
     }
 
     buildTypes {
@@ -23,14 +19,13 @@ android {
 }
 
 dependencies {
-    //    compile fileTree(include: ['*.jar'], dir: 'libs')
-    api "com.android.support:appcompat-v7:$supportlib_version"
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
     compileOnly files('libs/libmessaging_unity_player_activity.jar')
-    compileOnly "com.google.firebase:firebase-auth:$play_services_version"
+    compileOnly "com.google.firebase:firebase-auth:$firebase_auth_version"
     compileOnly "com.google.android.gms:play-services-auth:$play_services_version"
     compileOnly  files('libs/classes.jar')
-    api files('libs/okhttp-2.6.0.jar')
-    api files('libs/okio-1.6.0.jar')
+    implementation files('libs/okhttp-2.6.0.jar')
+    implementation files('libs/okio-1.6.0.jar')
 
     android {
         useLibrary 'org.apache.http.legacy'

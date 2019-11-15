@@ -12,9 +12,9 @@ import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.PermissionChecker;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.PermissionChecker;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -482,7 +482,7 @@ public class PictoryTaleUnityPlayerActivity extends MessagingUnityPlayerActivity
 		} else {
 			//PackageManager pm = context.getPackageManager();
 			//return pm.checkPermission(permission, context.getPackageName()) == PackageManager.PERMISSION_GRANTED;
-			return PermissionChecker.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
+			return PermissionChecker.checkSelfPermission(context, permission) == PermissionChecker.PERMISSION_GRANTED;
 		}
 	}
 
